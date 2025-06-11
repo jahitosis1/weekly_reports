@@ -1,69 +1,17 @@
 // #set document(margin: 1in)
 #set text(font: "Times New Roman", size: 11pt)
 
-#let name = "Student Name"
-#let stno = "XXXX-XXXXX"
-#let supervisor = "Supervisor Name"
-#let company = "Company Name"
-#let N = 0
+#let data = yaml("data.yaml")
 
-#let tasks_list = (
-  (
-    day: 1,
-    date: "Insert Date",
-    tasks: (
-      (
-        activity: "Activity 1",
-        status: "Complete",
-        solution: "N / A",
-      ),
-    ),
-  ),
-  (
-    day: 2,
-    date: "Insert Date",
-    tasks: (
-      (
-        activity: "Activity 1",
-        status: "Complete",
-        solution: "N / A",
-      ),
-    ),
-  ),
-  (
-    day: 3,
-    date: "Insert Date",
-    tasks: (
-      (
-        activity: "Activity 1",
-        status: "Complete",
-        solution: "N / A",
-      ),
-    ),
-  ),
-  (
-    day: 4,
-    date: "Insert Date",
-    tasks: (
-      (
-        activity: "Activity 1",
-        status: "Complete",
-        solution: "N / A",
-      ),
-    ),
-  ),
-  (
-    day: 5,
-    date: "Insert Date",
-    tasks: (
-      (
-        activity: "Activity 1",
-        status: "Complete",
-        solution: "N / A",
-      ),
-    ),
-  ),
-)
+#let name = data.name
+#let stno = data.stno
+#let supervisor = data.supervisor
+#let company = data.company
+#let N = eval(data.cumulative_hours)
+#let narrative_summary = data.narrative_summary
+#let appendix = data.appendix
+
+#let tasks_list = data.tasks
 
 #let activity_list(tasks_list) = {
   for entry in tasks_list {
@@ -83,6 +31,93 @@
         (task.activity, task.status, task.solution)
       }
     )
+  }
+}
+
+#let appendix_list(data) = {
+  let i = 0
+  for entry in data {
+    heading(level: 2, "Appendix " + str.from-unicode(65+i) + ": " + entry.title)
+    v(0.5cm)
+
+    align(
+      if entry.type == "technical" { left } else { center },
+      if entry.type == "table" {
+        table(
+          columns: (1fr, 0.5fr, 1fr),
+          align: center,
+          fill: (_, y) =>
+            if y == 0 { rgb("#e5e4e2") },
+          ..for content in entry.table_content {
+            entry.table_content.flatten()
+          }
+        )
+      } 
+      else if entry.type == "chart" {
+        image(
+          entry.chart_url,
+          alt: "Chart"
+        )
+      }
+      else if entry.type == "diagram" {
+        image(
+          entry.diagram_url,
+          alt: "Diagram"
+        )
+      }
+      else if entry.type == "glossary" {
+        if entry.type == "glossary" {
+          let glossary_terms = entry.glossary_content
+          let split_index = int(calc.round(glossary_terms.len() / 2, digits: 0))  // Split the glossary in half
+          let first_half = glossary_terms.slice(0, split_index)  // First column (first half)
+          let second_half = glossary_terms.slice(split_index)     // Second column (second half)
+          
+          columns(
+            2,
+            {         
+              let column1 = first_half
+              let column2 = second_half
+              
+              for term in column1 {
+                text(term.term + " - " + term.definition + "\n")
+              }
+              
+              colbreak()  // Move to the second column
+              
+              for term in column2 {
+                text(term.term + " - " + term.definition + "\n")
+              }
+            }
+          )
+        }
+      }
+      else if entry.type == "technical" {
+        for item in entry.tech_content {
+          heading(
+            level: 3,
+            item.section_title
+          )
+          if item.type == "code" {
+            raw(
+              item.code_content,
+              lang: item.language
+            )
+          }
+          else if item.type == "text" {
+            text(
+              item.text_content,
+            )
+          }
+          v(0.5cm)
+        }
+      }
+      else {
+        text("Invalid content type")
+      }
+    )
+
+    pagebreak()
+    i += 1
   }
 }
 
@@ -108,16 +143,19 @@
 
 = Narrative Summary
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+#v(0.5cm)
+#narrative_summary
 
 #pagebreak()
 
+#if appendix != none [
 = Appendix
-
-#pagebreak()
+#appendix_list(appendix)
+]
 
 = Digital Signature / Certification
 
+#v(0.5cm)
 I certify, to my knowledge, that all the activities and data mentioned in this document are true and correct and that they are stated here only for the evaluation of my faculty supervisor.
 
 Signed,
