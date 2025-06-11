@@ -104,6 +104,19 @@ Can include both code and text sections:
   diagram_url: "diagram.png"  # Reference to diagram image file
 ```
 
+## PDF Generation
+
+- To generate a PDF from the `.typ` file, You can do the following:
+    - Open in the [Typst](typst.app) website
+        - Create a New Project
+        - Open the Explorer
+        - Click the three dots
+        - Select Upload File
+        - Choose Pick a Folder
+    - In your terminal
+        - Make sure that `typst` is installed in your system
+        - Run the command `typst c <input_file> <output_file>`
+
 ## Important Notes
 
 1. Maintain the exact structure shown in the examples
