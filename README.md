@@ -107,7 +107,7 @@ Can include both code and text sections:
 ## PDF Generation
 
 - To generate a PDF from the `.typ` file, You can do the following:
-    - Open in the [Typst](typst.app) website
+    - Open in the [Typst](https://typst.app) website
         - Create a New Project
         - Open the Explorer
         - Click the three dots
