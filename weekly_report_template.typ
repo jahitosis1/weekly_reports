@@ -8,6 +8,7 @@
 #let supervisor = data.supervisor
 #let company = data.company
 #let N = eval(data.cumulative_hours)
+#let X = data.weekly_report
 #let narrative_summary = data.narrative_summary
 #let appendix = data.appendix
 
@@ -122,7 +123,7 @@
 }
 
 #align(center)[
-  #text(size: 17pt, weight: "bold")[Weekly Report X]
+  #text(size: 17pt, weight: "bold")[Weekly Report #X]
   #v(0.2cm)
   #name\
   _#stno _\
